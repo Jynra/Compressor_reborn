@@ -1,0 +1,21 @@
+# Backend Flask dependencies
+Flask==2.3.3
+Flask-CORS==4.0.0
+Werkzeug==2.3.7
+
+# File processing libraries
+Pillow==10.0.1
+PyPDF2==3.0.1
+moviepy==1.0.3
+pydub==0.25.1
+pillow-heif==0.13.0
+
+# System utilities
+pathlib2==2.3.7
+uuid==1.30
+
+# Production server (optionnel)
+gunicorn==21.2.0
+
+# Development utilities (optionnel)
+python-dotenv==1.0.0
