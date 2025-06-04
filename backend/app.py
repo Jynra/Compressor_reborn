@@ -14,7 +14,10 @@ import time
 # Importer notre compresseur
 from file_compressor import FileCompressor
 
-app = Flask(__name__)
+# Configuration pour servir les fichiers statiques React
+app = Flask(__name__, 
+           static_folder='../frontend/build',
+           static_url_path='')
 CORS(app)
 
 # Configuration
@@ -117,12 +120,36 @@ def compress_files_async(task_id, files, settings):
 @app.route('/')
 def index():
     """Servir le frontend React"""
-    return send_from_directory('../frontend/build', 'index.html')
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    """Servir les fichiers statiques React (CSS, JS, etc.)"""
+    return send_from_directory(os.path.join(app.static_folder, 'static'), filename)
+
+@app.route('/favicon.ico')
+def favicon():
+    """Servir le favicon"""
+    return send_from_directory(app.static_folder, 'favicon.ico')
+
+@app.route('/logo192.png')
+def logo192():
+    """Servir le logo PWA"""
+    return send_from_directory(app.static_folder, 'logo192.png')
+
+@app.route('/manifest.json')
+def manifest():
+    """Servir le manifeste PWA"""
+    return send_from_directory(app.static_folder, 'manifest.json')
 
 @app.route('/<path:path>')
-def serve_static(path):
-    """Servir les fichiers statiques du frontend"""
-    return send_from_directory('../frontend/build', path)
+def serve_react_routes(path):
+    """Servir les routes React (SPA routing)"""
+    # Si le fichier existe, le servir
+    if os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    # Sinon, servir index.html pour les routes React
+    return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/api/upload', methods=['POST'])
 def upload_files():

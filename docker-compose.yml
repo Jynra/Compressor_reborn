@@ -19,7 +19,7 @@ services:
       - TZ=Europe/Paris  # Ajustez selon votre timezone
       - MAX_CONTENT_LENGTH=1073741824  # 1GB en bytes
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/api/supported-formats"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/api/supported-formats')"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -35,17 +35,11 @@ services:
       - "version=1.0.0"
     networks:
       - file-compressor-network
-    # Suppression temporaire de proxy-network
-    # Vous pourrez l'ajouter plus tard avec : docker network connect proxy-network file-compressor-app
 
 networks:
   file-compressor-network:
     driver: bridge
     name: file-compressor-net
-  # Commenté temporairement
-  # proxy-network:
-  #   external: true
-  #   name: proxy-network
 
 volumes:
   file_compressor_uploads:
