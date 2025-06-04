@@ -35,23 +35,17 @@ services:
       - "version=1.0.0"
     networks:
       - file-compressor-network
-      - proxy-network  # Si vous avez un réseau partagé avec Traefik/nginx
-    deploy:
-      resources:
-        limits:
-          memory: 2G
-          cpus: "1.0"
-        reservations:
-          memory: 512M
-          cpus: "0.5"
+    # Suppression temporaire de proxy-network
+    # Vous pourrez l'ajouter plus tard avec : docker network connect proxy-network file-compressor-app
 
 networks:
   file-compressor-network:
     driver: bridge
     name: file-compressor-net
-  proxy-network:
-    external: true
-    name: proxy-network  # Réseau partagé avec vos autres services
+  # Commenté temporairement
+  # proxy-network:
+  #   external: true
+  #   name: proxy-network
 
 volumes:
   file_compressor_uploads:
