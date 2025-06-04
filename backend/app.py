@@ -61,16 +61,33 @@ def compress_files_async(task_id, files, settings):
         for i, file_info in enumerate(files):
             try:
                 file_path = Path(file_info['path'])
+                extension = file_path.suffix.lower()
                 
-                # Paramètres de compression
-                compression_params = {
-                    'quality': settings.get('quality', 85),
-                    'bitrate': settings.get('video_bitrate', '1000k'),
-                    'max_resolution': (
-                        settings.get('max_width', 1920),
-                        settings.get('max_height', 1080)
-                    )
-                }
+                # Préparer les paramètres selon le type de fichier
+                compression_params = {}
+                
+                if extension in compressor.image_extensions:
+                    compression_params = {
+                        'quality': settings.get('quality', 85),
+                        'max_resolution': (
+                            settings.get('max_width', 1920),
+                            settings.get('max_height', 1080)
+                        )
+                    }
+                elif extension in compressor.video_extensions:
+                    compression_params = {
+                        'bitrate': settings.get('video_bitrate', '1000k'),
+                        'resolution': (
+                            settings.get('max_width', 1280),
+                            settings.get('max_height', 720)
+                        )
+                    }
+                elif extension in compressor.audio_extensions:
+                    compression_params = {
+                        'bitrate': settings.get('audio_bitrate', '128k'),
+                        'format': 'mp3'
+                    }
+                # Pour PDF, pas de paramètres spéciaux nécessaires
                 
                 # Compresser le fichier
                 original_size = compressor.get_file_size(file_path)
@@ -78,7 +95,7 @@ def compress_files_async(task_id, files, settings):
                 
                 if output_path and output_path.exists():
                     compressed_size = compressor.get_file_size(output_path)
-                    compression_ratio = (1 - compressed_size / original_size) * 100
+                    compression_ratio = (1 - compressed_size / original_size) * 100 if original_size > 0 else 0
                     
                     result = {
                         'filename': file_info['filename'],
